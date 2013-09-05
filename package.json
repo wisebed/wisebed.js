@@ -1,5 +1,5 @@
 {
-  "name"         : "wisebed",
+  "name"         : "wisebed.js",
   "main"         : "./wisebed.js",
   "version"      : "1.0",
   "dependencies" : { "jquery" : "1.8.3" }
