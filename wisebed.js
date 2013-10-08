@@ -101,7 +101,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				url       : queryUrl,
 				success   : callbackDone,
 				error     : callbackError,
-				context   : document.body,
 				dataType  : "json",
 				xhrFields : { withCredentials: true }
 			});
@@ -115,7 +114,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				url       : queryUrl,
 				success   : callbackDone,
 				error     : callbackError,
-				context   : document.body,
 				dataType  : "json",
 				xhrFields : { withCredentials: true }
 			});
@@ -392,7 +390,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 					getBaseUri() + "/experiments/" + experimentId + "/network" :
 					getBaseUri() + "/experiments/network"),
 			cache    : false,
-			context  : document.body,
 			success  : callbackDone,
 			error    : callbackError,
 			complete : callbackComplete,
@@ -423,7 +420,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			url       : getBaseUri() + "/testbeds",
 			success   : callbackDone,
 			error     : callbackError,
-			context   : document.body,
 			dataType  : "json",
 			xhrFields : { withCredentials: true }
 		});
@@ -436,7 +432,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 	this.isLoggedIn = function(callbackDone, callbackError) {
 		$.ajax({
 			url      : getBaseUri() + "/auth/isLoggedIn",
-			context  : document.body,
 			dataType : "json",
 			success  : function() {callbackDone(true);},
 			error    : function(jqXHR, textStatus, errorThrown) {
@@ -474,7 +469,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 
 };
 
-module.require('jquery');
+var $ = module.require('jquery');
 module.exports = {
   Wisebed : Wisebed
 }
