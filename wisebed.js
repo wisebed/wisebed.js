@@ -27,9 +27,8 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.onOpen = onOpen;
 		this.onClose = onClose;
 
-		window.WebSocket = window.MozWebSocket || window.WebSocket;
-
 		var self = this;
+
 		this.socket = new WebSocket(getWebSocketBaseUri() + '/events');
 		this.socket.onmessage = function(event) {
 			var deviceEvent = JSON.parse(event.data);
@@ -51,8 +50,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.onmessage    = onmessage;
 		this.onopen       = onopen;
 		this.onclosed     = onclosed;
-
-		window.WebSocket = window.MozWebSocket || window.WebSocket;
 
 		var self = this;
 
@@ -470,6 +467,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 };
 
 var $ = module.require('jquery');
+var WebSocket = require('ws');
 module.exports = {
   Wisebed : Wisebed
 }
