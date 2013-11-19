@@ -1,15 +1,3 @@
-Array.prototype.compareArrays = function(arr) {
-	if (this.length != arr.length) return false;
-	for (var i = 0; i < arr.length; i++) {
-		if (this[i].compareArrays) { //likely nested array
-			if (!this[i].compareArrays(arr[i])) return false;
-			else continue;
-		}
-		if (this[i] != arr[i]) return false;
-	}
-	return true;
-};
-
 var Wisebed = function(baseUri, webSocketBaseUri) {
 
 	function getBaseUri() {
@@ -318,6 +306,21 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				//var flashRequestStatusURL = jqXHR.getResponseHeader("Location");
 				var flashRequestStatusURL = jqXHR.responseText;
 
+				var compareArrays = function(arr1, arr2) {
+					
+					if (arr1.length != arr2.length) {
+						return false;
+					}
+
+					for (var i = 0; i < arr1.length; i++) {
+						if (arr1[i] != arr2[i]) {
+							return false;
+						}
+					}
+
+					return true;
+				};
+
 				var schedule = setInterval(function() {
 
 					var onProgressRequestSuccess = function(data) {
@@ -330,9 +333,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 								completeNodeUrns.push(nodeUrn);
 							}
 						});
+
 						completeNodeUrns.sort();
 
-						if (allNodeUrns.compareArrays(completeNodeUrns)) {
+						if (compareArrays(allNodeUrns, completeNodeUrns)) {
 							callbackDone(data.operationStatus);
 							clearInterval(schedule);
 						} else {
