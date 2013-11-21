@@ -90,6 +90,12 @@ var WisebedReservation = function(confidentialReservationDataList) {
 
 var Wisebed = function(baseUri, webSocketBaseUri) {
 
+	function addAuthHeader(credentials) {
+		return function(xhr) {
+			xhr.setRequestHeader ("X-WISEBED-Authentication-Triple", JSON.stringify({ authenticationData : credentials }));
+		}
+	}
+
 	function getBaseUri() {
 		return baseUri;
 	}
@@ -192,10 +198,6 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			var queryUrl = getBaseUri() + "/reservations/personal?" +
 					(from ? ("from=" + from.toISOString() + "&") : "") +
 					(to ? ("to="+to.toISOString() + "&") : "");
-			var beforeSend = credentials ?
-				function (xhr) {
-					xhr.setRequestHeader ("X-WISEBED-Authentication-Triple", JSON.stringify({ authenticationData : credentials }));
-				} : undefined;
 			$.ajax({
 				url        : queryUrl,
 				success    : function(crdList, textStatus, jqXHR) {
@@ -204,7 +206,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 					callbackDone(list, textStatus, jqXHR);
 				},
 				error      : callbackError,
-				beforeSend : beforeSend,
+				beforeSend : credentials ? addAuthHeader(credentials) : undefined,
 				dataType   : "json",
 				xhrFields  : { withCredentials: true }
 			});
@@ -290,7 +292,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		/**
 		 * returns a WisebedReservation object
 		 */
-		this.make = function(from, to, nodeUrns, description, options, callbackDone, callbackError) {
+		this.make = function(from, to, nodeUrns, description, options, callbackDone, callbackError, credentials) {
 
 			// Generate JavaScript object
 			var content = {
@@ -310,6 +312,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				success		: 	function(confidentialReservationDataList, textStatus, jqXHR) {
 					callbackDone(new WisebedReservation(confidentialReservationDataList), textStatus, jqXHR)
 				},
+				beforeSend  : 	credentials ? addAuthHeader(credentials) : undefined,
 				error		: 	callbackError,
 				xhrFields   : { withCredentials: true }
 			});
