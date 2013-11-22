@@ -41,7 +41,7 @@ var WisebedConfidentialReservationData = function(crd) {
 	this.nodeUrns.sort();
 	this.nodeUrnPrefixes.sort();
 	this.serializedSecretReservationKeyBase64 = btoa(JSON.stringify([this.secretReservationKey]));
-	this.experimentId = this.serializedSecretReservationKeyBase64;
+	this.reservationId = this.serializedSecretReservationKeyBase64;
 };
 
 var WisebedReservation = function(confidentialReservationDataList) {
@@ -55,7 +55,7 @@ var WisebedReservation = function(confidentialReservationDataList) {
 	this.confidentialReservationDataList = [];
 	this.secretReservationKeys = [];
 	this.serializedSecretReservationKeyBase64 = null;
-	this.experimentId = null;
+	this.reservationId = null;
 
 	var self = this;
 
@@ -84,7 +84,7 @@ var WisebedReservation = function(confidentialReservationDataList) {
 		return 0;
 	});
 	this.serializedSecretReservationKeyBase64 = btoa(JSON.stringify(this.secretReservationKeys));
-	this.experimentId = this.serializedSecretReservationKeyBase64;
+	this.reservationId = this.serializedSecretReservationKeyBase64;
 	this.description = this.descriptions.join('<br/>');
 };
 
@@ -129,15 +129,15 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.socket.onclose = function(event) { self.onClose(event); };
 	};
 
-	this.WebSocket = function(experimentId, onmessage, onopen, onclosed) {
+	this.WebSocket = function(reservationId, onmessage, onopen, onclosed) {
 
-		this.experimentId = experimentId;
+		this.reservationId = reservationId;
 		this.onmessage    = onmessage;
 		this.onopen       = onopen;
 		this.onclosed     = onclosed;
 
 		var self = this;
-		var url = getWebSocketBaseUri() + '/experiments/' + this.experimentId;
+		var url = getWebSocketBaseUri() + '/experiments/' + this.reservationId;
 
 		this.socket = new WebSocket(url);
 		this.socket.onmessage = function(event) { self.onmessage(JSON.parse(event.data)); };
@@ -177,9 +177,9 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 	this.reservations = new function() {
 
 		/**
-		 * returns a WisebedReservation for the given experimentId (serialized base64-encoded secret reservation key(s))
+		 * returns a WisebedReservation for the given reservationId (serialized base64-encoded secret reservation key(s))
 		 */
-		this.getByExperimentId = function(experimentId, callbackDone, callbackError) {
+		this.getByReservationId = function(reservationId, callbackDone, callbackError) {
 			$.ajax({
 				url       : queryUrl,
 				success   : function(confidentialReservationDataList, textStatus, jqXHR) {
@@ -376,10 +376,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.areNodesAlive = function(experimentId, nodeUrns, callbackDone, callbackError) {
+		this.areNodesAlive = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/areNodesAlive",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/areNodesAlive",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -390,10 +390,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.send = function(experimentId, nodeUrns, messageBytesBase64, callbackDone, callbackError) {
+		this.send = function(reservationId, nodeUrns, messageBytesBase64, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/send",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/send",
 				type        : "POST",
 				data        : JSON.stringify({
 					sourceNodeUrn  : 'user',
@@ -408,10 +408,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.resetNodes = function(experimentId, nodeUrns, callbackDone, callbackError) {
+		this.resetNodes = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/resetNodes",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/resetNodes",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -422,10 +422,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.getNodeUrns = function(experimentId, callbackDone, callbackError) {
+		this.getNodeUrns = function(reservationId, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/nodeUrns",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/nodeUrns",
 				type        : "GET",
 				contentType : "application/json; charset=utf-8",
 				dataType    : "json",
@@ -435,10 +435,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.getChannelPipelines = function(experimentId, nodeUrns, callbackDone, callbackError) {
+		this.getChannelPipelines = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/getChannelPipelines",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/getChannelPipelines",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -449,7 +449,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
-		this.flashNodes = function(experimentId, data, callbackDone, callbackProgress, callbackError) {
+		this.flashNodes = function(reservationId, data, callbackDone, callbackProgress, callbackError) {
 
 			function getAllNodeUrnsFromRequestData(data) {
 
@@ -530,7 +530,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			};
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + experimentId + "/flash",
+				url         : getBaseUri() + "/experiments/" + reservationId + "/flash",
 				type        : "POST",
 				data        : JSON.stringify(data, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -541,10 +541,10 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		};
 	};
 
-	this.getNodeUrnArray = function(experimentId, callbackDone, callbackError) {
+	this.getNodeUrnArray = function(reservationId, callbackDone, callbackError) {
 
 		this.getWiseML(
-				experimentId,
+				reservationId,
 				function(wiseML, textStatus, jqXHR) {
 					callbackDone(this.getNodeUrnArrayFromWiseML(wiseML), textStatus, jqXHR);
 				},
@@ -552,11 +552,11 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		);
 	};
 
-	this.getWiseML = function(experimentId, callbackDone, callbackError, jsonOrXml, callbackComplete) {
+	this.getWiseML = function(reservationId, callbackDone, callbackError, jsonOrXml, callbackComplete) {
 
 		$.ajax({
-			url      : (experimentId ?
-					getBaseUri() + "/experiments/" + experimentId + "/network" :
+			url      : (reservationId ?
+					getBaseUri() + "/experiments/" + reservationId + "/network" :
 					getBaseUri() + "/experiments/network"),
 			cache    : false,
 			success  : callbackDone,
@@ -567,12 +567,12 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		});
 	};
 
-	this.getWiseMLAsJSON = function(experimentId, callbackDone, callbackError, callbackComplete) {
-		this.getWiseML(experimentId, callbackDone, callbackError, "json", callbackComplete);
+	this.getWiseMLAsJSON = function(reservationId, callbackDone, callbackError, callbackComplete) {
+		this.getWiseML(reservationId, callbackDone, callbackError, "json", callbackComplete);
 	};
 
-	this.getWiseMLAsXML = function(experimentId, callbackDone, callbackError, callbackComplete) {
-		this.getWiseML(experimentId, callbackDone, callbackError, "xml", callbackComplete);
+	this.getWiseMLAsXML = function(reservationId, callbackDone, callbackError, callbackComplete) {
+		this.getWiseML(reservationId, callbackDone, callbackError, "xml", callbackComplete);
 	};
 
 	this.getNodeUrnArrayFromWiseML = function(wiseML) {
