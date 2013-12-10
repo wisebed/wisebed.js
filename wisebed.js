@@ -137,7 +137,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.onclosed     = onclosed;
 
 		var self = this;
-		var url = getWebSocketBaseUri() + '/experiments/' + this.reservationId;
+		var url = getWebSocketBaseUri() + '/experiments/' + encodeURIComponent(this.reservationId);
 
 		this.socket = new WebSocket(url);
 		this.socket.onmessage = function(event) { self.onmessage(JSON.parse(event.data)); };
@@ -379,7 +379,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.areNodesAlive = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/areNodesAlive",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/areNodesAlive",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -393,7 +393,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.send = function(reservationId, nodeUrns, messageBytesBase64, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/send",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/send",
 				type        : "POST",
 				data        : JSON.stringify({
 					sourceNodeUrn  : 'user',
@@ -411,7 +411,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.resetNodes = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/resetNodes",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/resetNodes",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -425,7 +425,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.getNodeUrns = function(reservationId, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/nodeUrns",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/nodeUrns",
 				type        : "GET",
 				contentType : "application/json; charset=utf-8",
 				dataType    : "json",
@@ -438,7 +438,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		this.getChannelPipelines = function(reservationId, nodeUrns, callbackDone, callbackError) {
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/getChannelPipelines",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/getChannelPipelines",
 				type        : "POST",
 				data        : JSON.stringify({nodeUrns:nodeUrns}, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -530,7 +530,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			};
 
 			$.ajax({
-				url         : getBaseUri() + "/experiments/" + reservationId + "/flash",
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/flash",
 				type        : "POST",
 				data        : JSON.stringify(data, null, '  '),
 				contentType : "application/json; charset=utf-8",
@@ -554,15 +554,19 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 
 	this.getWiseML = function(reservationId, callbackDone, callbackError, jsonOrXml, callbackComplete) {
 
+		var dataType = (!jsonOrXml ? "json" : jsonOrXml);
+		var url = (reservationId ?
+					getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/network." + dataType :
+					getBaseUri() + "/experiments/network." + dataType);
+
 		$.ajax({
-			url      : (reservationId ?
-					getBaseUri() + "/experiments/" + reservationId + "/network" :
-					getBaseUri() + "/experiments/network"),
+			url      : url,
 			cache    : false,
 			success  : callbackDone,
 			error    : callbackError,
 			complete : callbackComplete,
-			dataType : (!jsonOrXml ? "json" : jsonOrXml),
+			accepts  : dataType,
+			dataType : dataType == 'xml' ? 'text' : dataType, // workaround because jQuery fails to parse this valid XML
 			xhrFields: { withCredentials: true }
 		});
 	};
