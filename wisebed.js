@@ -449,6 +449,22 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			});
 		};
 
+		this.setChannelPipelines = function(reservationId, nodeUrns, handlers, callbackDone, callbackError) {
+			$.ajax({
+				url         : getBaseUri() + "/experiments/" + encodeURIComponent(reservationId) + "/setChannelPipelines",
+				type        : "POST",
+				data        : JSON.stringify({
+					nodeUrns : nodeUrns,
+					handlers : handlers
+				}, null, '  '),
+				contentType : "application/json; charset=utf-8",
+				dataType    : "json",
+				success     : function(data) {callbackDone(data);},
+				error       : callbackError,
+				xhrFields   : { withCredentials: true }
+			});
+		};
+
 		this.flashNodes = function(reservationId, data, callbackDone, callbackProgress, callbackError) {
 
 			function getAllNodeUrnsFromRequestData(data) {
