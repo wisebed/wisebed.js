@@ -1,7 +1,7 @@
 {
 	"name"         : "wisebed.js",
 	"main"         : "./wisebed.js",
-	"version"      : "0.1.2",
+	"version"      : "0.2.0",
 	"dependencies" : {
 		"jquery"           : "1.8.3",
 		"ws"               : "0.4.31",
