@@ -67,19 +67,19 @@ var WisebedReservation = function(confidentialReservationDataList) {
 
 	confidentialReservationDataList.forEach(function(confidentialReservationData) {
 		var crd = new WisebedConfidentialReservationData(confidentialReservationData);
-		if (crd.description && crd.description != '') {
+		if (crd.description && crd.description !== '') {
 			self.descriptions.push(crd.description);
 		}
-		if (self.from == null || crd.from >= self.from) {
+		if (self.from === null || crd.from >= self.from) {
 			self.from = crd.from;
 		}
-		if (self.to   == null || crd.to   <= self.to  ) {
+		if (self.to === null || crd.to <= self.to  ) {
 			self.to = crd.to;
 		}
-		if (self.cancelled == null || crd.cancelled <= self.cancelled) {
+		if (self.cancelled === null || crd.cancelled <= self.cancelled) {
 			self.cancelled = crd.cancelled;
 		}
-		if (self.finalized == null || crd.finalized <= self.finalized) {
+		if (self.finalized === null || crd.finalized <= self.finalized) {
 			self.finalized = crd.finalized;
 		}
 		crd.nodeUrns.forEach(function(nodeUrn) {
@@ -110,8 +110,8 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 
 	function addAuthHeader(credentials) {
 		return function(xhr) {
-			xhr.setRequestHeader ("X-WISEBED-Authentication-Triple", JSON.stringify({ authenticationData : credentials }));
-		}
+			xhr.setRequestHeader("X-WISEBED-Authentication-Triple", JSON.stringify({ authenticationData : credentials }));
+		};
 	}
 
 	function getBaseUri() {
@@ -192,7 +192,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		});
 	};
 
-	this.reservations = new function() {
+	this.reservations = function() {
 
 		/**
 		 * returns a WisebedReservation for the given experimentId (serialized base64-encoded secret reservation key(s))
@@ -202,7 +202,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 			$.ajax({
 				url       : queryUrl,
 				success   : function(confidentialReservationDataList, textStatus, jqXHR) {
-					callbackDone(new WisebedReservation(confidentialReservationDataList), textStatus, jqXHR)
+					callbackDone(new WisebedReservation(confidentialReservationDataList), textStatus, jqXHR);
 				},
 				error     : callbackError,
 				dataType  : "json",
@@ -273,8 +273,8 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 
 				for (var i=0; i<powerset.length; i++) {
 					
-					if (powerset[i].length == 0) {continue;} // first element (empty set) doesn't make sense
-					if (powerset[i].length == 1) {continue;} // single reservation sets can't be federated
+					if (powerset[i].length === 0) {continue;} // first element (empty set) doesn't make sense
+					if (powerset[i].length === 1) {continue;} // single reservation sets can't be federated
 
 					// for every reservation in the current set of reservations check if reservation interval
 					// overlaps with reservation interval of each other reservation in the set
@@ -331,7 +331,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				contentType	:	"application/json; charset=utf-8",
 				dataType	:	"json",
 				success		: 	function(confidentialReservationDataList, textStatus, jqXHR) {
-					callbackDone(new WisebedReservation(confidentialReservationDataList), textStatus, jqXHR)
+					callbackDone(new WisebedReservation(confidentialReservationDataList), textStatus, jqXHR);
 				},
 				beforeSend  : 	credentials ? addAuthHeader(credentials) : undefined,
 				error		: 	callbackError,
@@ -382,7 +382,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 		};
 	};
 
-	this.experiments = new function() {
+	this.experiments = function() {
 
 		this.getConfiguration = function (url, callbackDone, callbackError) {
 			$.ajax({
@@ -630,7 +630,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 	};
 
 	this.getNodeUrnArrayFromWiseML = function(wiseML) {
-		var nodeUrns = new Array();
+		var nodeUrns = [];
 		var nodes = wiseML.setup.node;
 		for (var i=0; i<nodes.length; i++) {
 			nodeUrns[i] = nodes[i].id;
@@ -649,7 +649,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 	};
 
 	this.hasSecretAuthenticationKeyCookie = function() {
-		return $.cookie('wisebed-secret-authentication-key') != null;
+		return $.cookie('wisebed-secret-authentication-key') !== null;
 	};
 
 	this.isLoggedIn = function(callbackDone, callbackError) {
@@ -692,7 +692,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 
 };
 
-var $      = module.require('jquery');
+var $      = require('jquery');
 var moment = require('moment');
 var btoa   = require('btoa');
 var atob   = require('atob');
@@ -706,4 +706,4 @@ module.exports = {
   WisebedPublicReservationData       : WisebedPublicReservationData,
   WisebedConfidentialReservationData : WisebedConfidentialReservationData,
   WisebedReservation                 : WisebedReservation
-}
+};
