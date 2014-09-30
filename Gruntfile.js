@@ -4,15 +4,23 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     browserify: {
-      'dist/<%= pkg.name %>.browserify.js': ['src/<%= pkg.name %>.js']
+      'dist/wisebed.browserify.js': ['src/wisebed.js'],
+      browserifyOptions: {debug:true}
     },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
-        src: 'build/<%= pkg.name %>.browserify.js',
-        dest: 'dist/<%= pkg.name %>.min.js'
+        src: 'dist/wisebed.browserify.js',
+        dest: 'dist/wisebed.min.js'
+      }
+    },
+    copy: {
+      main: {
+        files: [
+          {expand: true, cwd: 'src/', src:['**'], dest: 'dist/'}
+        ]
       }
     },
 	clean: ['dist/','docs/'],
@@ -43,6 +51,7 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -51,6 +60,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
   grunt.registerTask('doc', ['yuidoc']);
-  grunt.registerTask('default', ['jshint','browserify','uglify','yuidoc']);
+  grunt.registerTask('default', ['jshint','browserify','uglify','yuidoc','copy']);
 
 };
