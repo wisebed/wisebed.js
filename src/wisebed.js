@@ -219,7 +219,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				var queryUrl = getBaseUri() + "/reservations/personal?" +
 						(from ? ("from=" + from.toISOString() + "&") : "") +
 						(to ? ("to="+to.toISOString() + "&") : "") +
-						(showCancelled ? ("showCancelled="+ showCancelled + "&") : "");
+						((showCancelled !== undefined) ? ("showCancelled="+ showCancelled + "&") : "");
 				$.ajax({
 					url        : queryUrl,
 					success    : function(crdList, textStatus, jqXHR) {
@@ -241,7 +241,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				var queryUrl = getBaseUri() + "/reservations/public?" +
 						(from ? ("from=" + from.toISOString() + "&") : "") +
 						(to ? ("to=" + to.toISOString() + "&") : "") +
-						(to ? ("showCancelled=" + showCancelled + "&") : "");
+						((showCancelled !== undefined) ? ("showCancelled=" + showCancelled + "&") : "");
 				$.ajax({
 					url       : queryUrl,
 					success   : function(prdList, textStatus, jqXHR) {
