@@ -219,7 +219,7 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 				var queryUrl = getBaseUri() + "/reservations/personal?" +
 						(from ? ("from=" + from.toISOString() + "&") : "") +
 						(to ? ("to="+to.toISOString() + "&") : "") +
-						(to ? ("showCancelled="+ showCancelled + "&") : "");
+						(showCancelled ? ("showCancelled="+ showCancelled + "&") : "");
 				$.ajax({
 					url        : queryUrl,
 					success    : function(crdList, textStatus, jqXHR) {
