@@ -694,7 +694,17 @@ var Wisebed = function(baseUri, webSocketBaseUri) {
 	};
 };
 
-var $      = require('jquery');
+var $;
+if (typeof window === 'undefined') { // running in node.js or io.js
+	var domino         = require('domino');
+	var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+	var $              = require('jquery')(domino.createWindow());
+	$.support.cors=true; // cross domain
+	$.ajaxSettings.xhr=function(){return new XMLHttpRequest();};
+} else {
+	$ = require('jquery');
+}
+
 var moment = require('moment');
 var btoa   = require('btoa');
 var atob   = require('atob');
