@@ -14,7 +14,3 @@ npm install
 ```
 
 and you're ready to go!
-
-# Usage
-
-TODO: describe usage here :)
